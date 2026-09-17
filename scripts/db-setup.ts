@@ -19,9 +19,12 @@ async function main() {
   const db = drizzle(client, { schema });
   console.log("→ Aplicando migraciones…");
   await migrate(db, { migrationsFolder: "./drizzle" });
+  const isProd = Boolean(process.env.VERCEL) || process.env.NODE_ENV === "production";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? (isProd ? undefined : "Deseo2026!");
+  if (!adminPassword) console.warn("⚠ ADMIN_PASSWORD no definida: no se crea el usuario administrador.");
   await seed(db, {
     adminEmail: process.env.ADMIN_EMAIL ?? "admin@deseo.bcn",
-    adminPassword: process.env.ADMIN_PASSWORD ?? "Deseo2026!",
+    adminPassword,
     demoOrders: process.env.SEED_DEMO_ORDERS !== "false",
   });
   await client.end();

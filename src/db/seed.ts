@@ -23,7 +23,19 @@ function mulberry32(seed: number) {
   };
 }
 
-export async function seed(db: DB, opts: { adminEmail: string; adminPassword: string; demoOrders?: boolean }) {
+export async function seed(db: DB, opts: { adminEmail: string; adminPassword?: string; demoOrders?: boolean }) {
+  if (opts.adminPassword) {
+    await db
+      .insert(schema.users)
+      .values({
+        email: opts.adminEmail.toLowerCase(),
+        name: "Equipo DESEO",
+        passwordHash: await bcrypt.hash(opts.adminPassword, 10),
+        role: "admin",
+      })
+      .onConflictDoNothing();
+  }
+
   const existing = await db.select({ n: sql<number>`count(*)::int` }).from(schema.products);
   if (existing[0].n > 0) {
     console.log("↷ Catálogo ya existente, no se vuelve a sembrar.");
@@ -73,12 +85,6 @@ export async function seed(db: DB, opts: { adminEmail: string; adminPassword: st
   }
 
   await db.insert(schema.coupons).values(seedCoupons).onConflictDoNothing();
-
-  const passwordHash = await bcrypt.hash(opts.adminPassword, 10);
-  await db
-    .insert(schema.users)
-    .values({ email: opts.adminEmail.toLowerCase(), name: "Equipo DESEO", passwordHash, role: "admin" })
-    .onConflictDoNothing();
 
   if (opts.demoOrders !== false) {
     console.log("→ Generando pedidos de demostración para el panel…");
