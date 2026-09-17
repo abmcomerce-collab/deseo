@@ -56,14 +56,15 @@ Acceso al panel: `admin@deseo.bcn` con la contraseña de `ADMIN_PASSWORD` (en lo
 | `AUTH_SECRET` | Secreto (mín. 32 caracteres) para firmar sesiones. Opcional: si falta se deriva de `DATABASE_URL` |
 | `STRIPE_SECRET_KEY` | Clave secreta de Stripe **de prueba** (`sk_test_…`) |
 | `STRIPE_WEBHOOK_SECRET` | Secreto del endpoint `/api/stripe/webhook` (opcional pero recomendado) |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Usuario administrador creado en el primer despliegue |
+| `ADMIN_EMAIL` | Email del administrador. La primera cuenta registrada en la web con ese email (si aún no hay admin) recibe el rol |
+| `ADMIN_PASSWORD` | Opcional: crea directamente el admin con esa contraseña durante el build |
 | `NEXT_PUBLIC_SITE_URL` | URL pública (opcional en Vercel) |
 
 ## Despliegue en Vercel
 
 1. Importa el repositorio en Vercel.
 2. En **Storage** añade una base de datos Postgres (Neon); crea `DATABASE_URL` automáticamente.
-3. Añade `STRIPE_SECRET_KEY` y `ADMIN_PASSWORD` (y opcionalmente `AUTH_SECRET`).
+3. Añade `STRIPE_SECRET_KEY` (o la integración de Stripe del Marketplace) y `ADMIN_EMAIL`; regístrate en `/cuenta/registro` con ese email para obtener acceso a `/admin`.
 4. Despliega. El build aplica migraciones y siembra el catálogo si la base de datos está vacía.
 5. En Stripe → Desarrolladores → Webhooks, crea un endpoint a `https://TU-DOMINIO/api/stripe/webhook` con los eventos `checkout.session.completed`, `checkout.session.expired` y `checkout.session.async_payment_*`, y guarda su secreto en `STRIPE_WEBHOOK_SECRET`.
 

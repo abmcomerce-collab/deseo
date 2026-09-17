@@ -39,12 +39,21 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   const exists = await db.query.users.findFirst({ where: eq(schema.users.email, email), columns: { id: true } });
   if (exists) return { message: "Ya existe una cuenta con ese email.", errors: { email: "Prueba a iniciar sesión." } };
 
+  // Alta del primer administrador: la primera cuenta con ADMIN_EMAIL recibe el rol,
+  // solo mientras no exista ningún admin (así no hay contraseñas en variables de entorno).
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  let role: "customer" | "admin" = "customer";
+  if (adminEmail && email === adminEmail) {
+    const existingAdmin = await db.query.users.findFirst({ where: eq(schema.users.role, "admin"), columns: { id: true } });
+    if (!existingAdmin) role = "admin";
+  }
+
   const [user] = await db
     .insert(schema.users)
-    .values({ name, email, passwordHash: await bcrypt.hash(password, 10) })
+    .values({ name, email, passwordHash: await bcrypt.hash(password, 10), role })
     .returning();
   await createSession({ userId: user.id, name: user.name, email: user.email, role: user.role });
-  redirect(safeNext(formData.get("next"), "/cuenta"));
+  redirect(safeNext(formData.get("next"), role === "admin" ? "/admin" : "/cuenta"));
 }
 
 const loginSchema = z.object({
