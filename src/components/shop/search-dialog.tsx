@@ -15,7 +15,7 @@ const normalize = (s: string) =>
   s
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "");
+    .replace(/[\u0300-\u036f]/g, "");
 
 export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [products, setProducts] = useState<ShopProduct[]>(cache ?? []);

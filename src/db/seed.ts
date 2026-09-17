@@ -101,7 +101,7 @@ export async function seed(db: DB, opts: { adminEmail: string; adminPassword: st
       const [order] = await db
         .insert(schema.orders)
         .values({
-          email: `${name.split(" ")[0].toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")}.${k}@example.com`,
+          email: `${name.split(" ")[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}.${k}@example.com`,
           name,
           phone: "600000000",
           address: "Dirección de demostración",
