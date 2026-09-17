@@ -81,6 +81,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
               <Search className="size-5 text-humo" />
               <input
                 ref={inputRef}
+                autoFocus
                 value={q}
                 onChange={(e) => {
                   setQ(e.target.value);
