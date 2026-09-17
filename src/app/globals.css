@@ -1,26 +1,208 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-noche: #140b10;
+  --color-vino: #3b1224;
+  --color-crema: #f6efe6;
+  --color-papel: #fbf7f1;
+  --color-arena: #e9dccb;
+  --color-humo: #6e6066;
+  --color-brasa: #ff5a36;
+  --color-brasa-oscuro: #e0401d;
+  --color-tinta: #c9360f; /* brasa legible como texto sobre fondos claros */
+  --color-lima: #d4f27a;
+  --color-linea: rgb(20 11 16 / 0.12);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-spin-slow: spin 28s linear infinite;
+  --animate-fade-up: fade-up 0.9s var(--ease-out-expo) both;
+
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-4deg); }
+    50% { transform: translate3d(0, -14px, 0) rotate(-1deg); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translate3d(0, 24px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-papel);
+    color: var(--color-noche);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: var(--color-brasa);
+    color: white;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brasa);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 0.92;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .container-x {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 3rem);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.6rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1;
+    transition: transform 0.4s var(--ease-spring), background-color 0.25s, color 0.25s, box-shadow 0.25s;
+    will-change: transform;
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-noche);
+    color: var(--color-crema);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-brasa);
+    color: var(--color-noche);
+  }
+  .btn-brasa {
+    background: var(--color-brasa);
+    color: var(--color-noche);
+  }
+  .btn-brasa:hover:not(:disabled) {
+    background: var(--color-noche);
+    color: var(--color-crema);
+  }
+  .btn-ghost {
+    border: 1px solid currentColor;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-noche);
+    border-color: var(--color-noche);
+    color: var(--color-crema);
+  }
+  .field {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--color-linea);
+    background: white;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-noche);
+    box-shadow: 0 0 0 4px rgb(255 90 54 / 0.18);
+  }
+  .field[aria-invalid="true"] {
+    border-color: #d92d20;
+  }
+  .label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    color: var(--color-noche);
+  }
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s var(--ease-out-expo);
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* Grano de papel sutil en toda la web */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @keyframes reveal-up {
+    from { opacity: 0; transform: translate3d(0, 48px, 0); }
+    to { opacity: 1; transform: none; }
+  }
+  .reveal {
+    animation: reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry var(--reveal-start, 0%) entry calc(var(--reveal-start, 0%) + 45%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none !important; }
 }
