@@ -8,9 +8,10 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import * as schema from "../src/db/schema";
 import { seed } from "../src/db/seed";
+import { databaseUrl } from "../src/db/url";
 
 async function main() {
-  const url = process.env.DATABASE_URL;
+  const url = databaseUrl();
   if (!url) {
     console.warn("⚠ DATABASE_URL no definida: se omite la preparación de la base de datos.");
     return;

@@ -2,8 +2,9 @@ import "server-only";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { databaseUrl } from "./url";
 
-const url = process.env.DATABASE_URL;
+const url = databaseUrl();
 if (!url) throw new Error("DATABASE_URL no está definida");
 
 const globalForDb = globalThis as unknown as { pg?: ReturnType<typeof postgres> };

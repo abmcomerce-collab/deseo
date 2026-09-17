@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { databaseUrl } from "@/db/url";
 
 export type SessionPayload = {
   userId: string;
@@ -22,7 +23,7 @@ async function key() {
   if (secret && secret.length >= 32) {
     cachedKey = new TextEncoder().encode(secret);
   } else {
-    const base = process.env.DATABASE_URL;
+    const base = databaseUrl();
     if (!base) throw new Error("Define AUTH_SECRET (mín. 32 caracteres) o DATABASE_URL");
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`deseo-session:${base}`));
     cachedKey = new Uint8Array(digest);
